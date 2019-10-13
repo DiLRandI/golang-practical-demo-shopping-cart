@@ -1,0 +1,18 @@
+syntax = "proto3";
+package services.shipping;
+option go_package = "shipping-service.pb";
+
+message CalculateShippingCostRequest {
+    int32 Width = 1;
+    int32 Height = 2;
+    int32 Length = 3;
+    int32 Weight = 4;
+}
+
+message CalculateShippingCostResponse {
+    float Cost = 1;
+}
+
+service ShippingService {
+    rpc CalculateShippingCost (CalculateShippingCostRequest) returns (CalculateShippingCostResponse);
+}
