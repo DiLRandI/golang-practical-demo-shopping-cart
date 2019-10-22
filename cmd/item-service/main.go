@@ -8,18 +8,20 @@ import (
 	"strings"
 )
 
+//Item ...
 type Item struct {
-	ID             int     `json:"id"`
-	ItemCode       string  `json:"item_code"`
-	Description    string  `json:"description"`
-	UnitPrice      float32 `json:"unitPrice`
-	PackingDetails PackingDetail
+	ID             int           `json:"id"`
+	ItemCode       string        `json:"item_code"`
+	Description    string        `json:"description"`
+	UnitPrice      float32       `json:"unit_price"`
+	PackingDetails PackingDetail `json:"packing_details"`
 }
 
+//PackingDetail ..
 type PackingDetail struct {
-	Width  float32 `json:"width`
-	Height int     `json:"height`
-	Weight int     `json:"weight`
+	Width  float32 `json:"width"`
+	Height int     `json:"height"`
+	Weight int     `json:"weight"`
 }
 
 var items []Item
@@ -53,7 +55,7 @@ func init() {
 		Item{
 			1,
 			"Itm001",
-			"Tofee",
+			"Toffee",
 			400,
 			packingDetails[0],
 		},
@@ -67,7 +69,7 @@ func init() {
 		Item{
 			3,
 			"Itm003",
-			"Buscuit",
+			"Biscuit",
 			300,
 			packingDetails[2],
 		},
@@ -85,12 +87,12 @@ func init() {
 func main() {
 	log.Println("Starting Item Service")
 	http.HandleFunc("/getitem", GetItems)
-	http.HandleFunc("/getitem/", GetItemById)
+	http.HandleFunc("/getitem/", GetItemByID)
 	http.ListenAndServe(":8080", nil)
 	log.Println("Item Service Served")
 }
 
-//Get Items endpoint
+//GetItems endpoint
 func GetItems(rw http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "GET" {
@@ -101,17 +103,17 @@ func GetItems(rw http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(rw).Encode(items)
 }
 
-//Get Item By Id endpoint
-func GetItemById(rw http.ResponseWriter, r *http.Request) {
+//GetItemByID Id endpoint
+func GetItemByID(rw http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "GET" {
 		http.Error(rw, "Invalid Method", http.StatusNotFound)
 		return
 	}
 
-	stringId := strings.Replace(r.URL.Path, "/getitem/", "", 1)
+	stringID := strings.Replace(r.URL.Path, "/getitem/", "", 1)
 
-	id, err := strconv.Atoi(stringId)
+	id, err := strconv.Atoi(stringID)
 
 	if err != nil {
 		http.Error(rw, "Invalid Type of ItemId", http.StatusBadRequest)
