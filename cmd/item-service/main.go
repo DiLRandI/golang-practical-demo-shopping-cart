@@ -2,71 +2,92 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
 type Item struct {
-	ID          int     `json:"id"`
-	ItemCode    string  `json:"item_code"`
-	Description string  `json:"description"`
-	UnitPrice   float32 `json:"unitPrice`
-	Width       float32 `json:"width`
-	Height      int     `json:"height`
-	Weight      int     `json:"weight`
+	ID             int     `json:"id"`
+	ItemCode       string  `json:"item_code"`
+	Description    string  `json:"description"`
+	UnitPrice      float32 `json:"unitPrice`
+	PackingDetails PackingDetail
+}
+
+type PackingDetail struct {
+	Width  float32 `json:"width`
+	Height int     `json:"height`
+	Weight int     `json:"weight`
 }
 
 var items []Item
+var packingDetails []PackingDetail
 
 func init() {
+	packingDetails = []PackingDetail{
+		PackingDetail{
+			20.5,
+			10,
+			5,
+		},
+		PackingDetail{
+			30.5,
+			40,
+			6,
+		},
+		PackingDetail{
+			30.5,
+			70,
+			9,
+		},
+		PackingDetail{
+			50.5,
+			30,
+			8,
+		},
+	}
+
 	items = []Item{
 		Item{
 			1,
 			"Itm001",
 			"Tofee",
-			100,
-			20.5,
-			10,
-			5,
+			400,
+			packingDetails[0],
 		},
 		Item{
 			2,
 			"Itm002",
 			"Choclate",
 			200,
-			30.5,
-			40,
-			6,
+			packingDetails[1],
 		},
 		Item{
 			3,
 			"Itm003",
 			"Buscuit",
 			300,
-			30.5,
-			40,
-			7,
+			packingDetails[2],
 		},
 		Item{
 			4,
 			"Itm004",
 			"Banana",
 			400,
-			30.5,
-			40,
-			7,
+			packingDetails[3],
 		},
 	}
+
 }
 
 func main() {
-	fmt.Println("Hello from item service.")
+	log.Println("Starting Item Service")
 	http.HandleFunc("/getitem", GetItems)
 	http.HandleFunc("/getitem/", GetItemById)
 	http.ListenAndServe(":8080", nil)
-
+	log.Println("Item Service Served")
 }
 
 //Get Items endpoint
@@ -76,7 +97,7 @@ func GetItems(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, r.URL.Path, http.StatusNotFound)
 		return
 	}
-
+	log.Println("Get All Item Method Invoked")
 	json.NewEncoder(rw).Encode(items)
 }
 
@@ -103,6 +124,7 @@ func GetItemById(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Item Not Found", http.StatusNotFound)
 		return
 	}
+	log.Println("Get Item By Id  Method Invoked")
 	json.NewEncoder(rw).Encode(items[index])
 
 }
