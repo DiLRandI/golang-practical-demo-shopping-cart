@@ -19,9 +19,9 @@ type Item struct {
 
 //PackingDetail ..
 type PackingDetail struct {
-	Width  float32 `json:"width"`
-	Height int     `json:"height"`
-	Weight int     `json:"weight"`
+	Width  int `json:"width"`
+	Height int `json:"height"`
+	Weight int `json:"weight"`
 }
 
 var items []Item
