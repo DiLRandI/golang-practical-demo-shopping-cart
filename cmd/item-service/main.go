@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 //Item ...
@@ -85,33 +86,33 @@ func init() {
 }
 
 func main() {
-	log.Println("Starting Item Service")
-	http.HandleFunc("/getitem", GetItems)
-	http.HandleFunc("/getitem/", GetItemByID)
-	http.ListenAndServe(":8080", nil)
-	log.Println("Item Service Served")
+	// log.Println("Starting Item Service")
+	// http.HandleFunc("/getitem", GetItems)
+	// http.HandleFunc("/getitem/", GetItemByID)
+	// http.ListenAndServe(":8080", nil)
+	// log.Println("Item Service Served")
+
+	router := httprouter.New()
+	router.GET("/getitem", GetItems)
+	router.GET("/getitem/:ID", GetItemByID)
+
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 //GetItems endpoint
-func GetItems(rw http.ResponseWriter, r *http.Request) {
+func GetItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	log.Println("GetAllItem Method Invoked")
+	defer log.Println("GetAllItem  Exiting")
 
-	if r.Method != "GET" {
-		http.Error(rw, r.URL.Path, http.StatusNotFound)
-		return
-	}
-	log.Println("Get All Item Method Invoked")
 	json.NewEncoder(rw).Encode(items)
 }
 
 //GetItemByID Id endpoint
-func GetItemByID(rw http.ResponseWriter, r *http.Request) {
+func GetItemByID(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+	log.Println("GetItemByID  Method Invoked")
+	defer log.Println("GetItemByID Exiting")
 
-	if r.Method != "GET" {
-		http.Error(rw, "Invalid Method", http.StatusNotFound)
-		return
-	}
-
-	stringID := strings.Replace(r.URL.Path, "/getitem/", "", 1)
+	stringID := parm.ByName("ID")
 
 	id, err := strconv.Atoi(stringID)
 
@@ -123,12 +124,11 @@ func GetItemByID(rw http.ResponseWriter, r *http.Request) {
 	index := indexOf(id)
 
 	if index == -1 {
-		http.Error(rw, "Item Not Found", http.StatusNotFound)
+		http.Error(rw, "", http.StatusNotFound)
 		return
 	}
-	log.Println("Get Item By Id  Method Invoked")
-	json.NewEncoder(rw).Encode(items[index])
 
+	json.NewEncoder(rw).Encode(items[index])
 }
 
 func indexOf(element int) int {
