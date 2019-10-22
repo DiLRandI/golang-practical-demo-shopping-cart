@@ -30,22 +30,22 @@ var packingDetails []PackingDetail
 func init() {
 	packingDetails = []PackingDetail{
 		PackingDetail{
-			20.5,
+			20,
 			10,
 			5,
 		},
 		PackingDetail{
-			30.5,
+			30,
 			40,
 			6,
 		},
 		PackingDetail{
-			30.5,
+			30,
 			70,
 			9,
 		},
 		PackingDetail{
-			50.5,
+			50,
 			30,
 			8,
 		},
