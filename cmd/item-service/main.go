@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
+	log "github.com/sirupsen/logrus"
 )
 
 //Item ...
@@ -86,12 +86,6 @@ func init() {
 }
 
 func main() {
-	// log.Println("Starting Item Service")
-	// http.HandleFunc("/getitem", GetItems)
-	// http.HandleFunc("/getitem/", GetItemByID)
-	// http.ListenAndServe(":8080", nil)
-	// log.Println("Item Service Served")
-
 	router := httprouter.New()
 	router.GET("/getitem", GetItems)
 	router.GET("/getitem/:ID", GetItemByID)
@@ -101,22 +95,22 @@ func main() {
 
 //GetItems endpoint
 func GetItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	log.Println("GetAllItem Method Invoked")
-	defer log.Println("GetAllItem  Exiting")
+	log.Info("GetAllItem Method Invoked")
+	defer log.Info("GetAllItem  Exiting")
 
 	json.NewEncoder(rw).Encode(items)
 }
 
 //GetItemByID Id endpoint
 func GetItemByID(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
-	log.Println("GetItemByID  Method Invoked")
-	defer log.Println("GetItemByID Exiting")
+	log.Info("GetItemByID  Method Invoked")
+	defer log.Info("GetItemByID Exiting")
 
 	stringID := parm.ByName("ID")
-
 	id, err := strconv.Atoi(stringID)
 
 	if err != nil {
+		log.Errorf("error while reading ID param, %v", err)
 		http.Error(rw, "Invalid Type of ItemId", http.StatusBadRequest)
 		return
 	}
@@ -124,10 +118,12 @@ func GetItemByID(rw http.ResponseWriter, r *http.Request, parm httprouter.Params
 	index := indexOf(id)
 
 	if index == -1 {
+		log.Warningf("No data found to given ID : %v", id)
 		http.Error(rw, "", http.StatusNotFound)
 		return
 	}
 
+	log.Printf("Response value, %+v", items[index])
 	json.NewEncoder(rw).Encode(items[index])
 }
 
