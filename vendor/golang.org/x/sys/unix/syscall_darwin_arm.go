@@ -12,6 +12,13 @@ func ptrace(request int, pid int, addr uintptr, data uintptr) error {
 	return ENOTSUP
 }
 
+<<<<<<< HEAD
+func sysctl(mib []_C_int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) error {
+	return ENOTSUP
+}
+
+=======
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 func setTimespec(sec, nsec int64) Timespec {
 	return Timespec{Sec: int32(sec), Nsec: int32(nsec)}
 }

@@ -36,6 +36,11 @@ var (
 // INO64_FIRST from /usr/src/lib/libc/sys/compat-ino64.h
 const _ino64First = 1200031
 
+<<<<<<< HEAD
+//sys	sysctl(mib []_C_int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) (err error) = SYS___SYSCTL
+
+=======
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 func supportsABI(ver uint32) bool {
 	osreldateOnce.Do(func() { osreldate, _ = SysctlUint32("kern.osreldate") })
 	return osreldate >= ver
@@ -201,8 +206,11 @@ func setattrlistTimes(path string, times []Timespec, flags int) error {
 
 //sys   ioctl(fd int, req uint, arg uintptr) (err error)
 
+<<<<<<< HEAD
+=======
 //sys   sysctl(mib []_C_int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) (err error) = SYS___SYSCTL
 
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 func Uname(uname *Utsname) error {
 	mib := []_C_int{CTL_KERN, KERN_OSTYPE}
 	n := unsafe.Sizeof(uname.Sysname)

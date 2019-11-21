@@ -89,7 +89,11 @@ var darwinTests = [...]darwinTest{
 	{"recvmsg", libc_recvmsg_trampoline},
 	{"sendmsg", libc_sendmsg_trampoline},
 	{"kevent", libc_kevent_trampoline},
+<<<<<<< HEAD
+	{"__sysctl", libc___sysctl_trampoline},
+=======
 	{"sysctl", libc_sysctl_trampoline},
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 	{"utimes", libc_utimes_trampoline},
 	{"futimes", libc_futimes_trampoline},
 	{"fcntl", libc_fcntl_trampoline},

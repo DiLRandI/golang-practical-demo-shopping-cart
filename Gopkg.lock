@@ -2,6 +2,42 @@
 
 
 [[projects]]
+<<<<<<< HEAD
+  name = "github.com/golang/protobuf"
+  packages = ["proto","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
+  revision = "6c65a5562fc06764971b7c5d05c76c75e84bdbf7"
+  version = "v1.3.2"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["http/httpguts","http2","http2/hpack","idna","internal/timeseries","trace"]
+  revision = "491137f692577e390404f177a0515c9f86f79754"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "b09406accb4736d857a32bf9444cd7edae2ffa79"
+
+[[projects]]
+  name = "golang.org/x/text"
+  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/language","internal/language/compact","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  revision = "342b2e1fbaa52c93f31447ad2c6abc048c63e475"
+  version = "v0.3.2"
+
+[[projects]]
+  branch = "master"
+  name = "google.golang.org/genproto"
+  packages = ["googleapis/rpc/status"]
+  revision = "548a555dbc03994223efbaba0090152849259498"
+
+[[projects]]
+  name = "google.golang.org/grpc"
+  packages = [".","balancer","balancer/base","balancer/roundrobin","binarylog/grpc_binarylog_v1","codes","connectivity","credentials","credentials/internal","encoding","encoding/proto","grpclog","internal","internal/backoff","internal/balancerload","internal/binarylog","internal/channelz","internal/envconfig","internal/grpcrand","internal/grpcsync","internal/syscall","internal/transport","keepalive","metadata","naming","peer","resolver","resolver/dns","resolver/passthrough","serviceconfig","stats","status","tap"]
+  revision = "f6d0f9ee430895e87ef1ceb5ac8f39725bafceef"
+  version = "v1.24.0"
+=======
   name = "github.com/julienschmidt/httprouter"
   packages = ["."]
   revision = "4eec211fa4e8df74ed978dc5681612131854144f"
@@ -24,10 +60,15 @@
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "f89234f9a2c237c4d4cf7b32e3d9fe2f7c4eacd7"
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
+<<<<<<< HEAD
+  inputs-digest = "3ce8a91a099b451223bab1efb1bd9820ccfccb701cedc3dec9dc6c54b1609682"
+=======
   inputs-digest = "6929ea31a360d17093b2e81f871912ffb3b26d08cb79d824e8de66ad1cce84e4"
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
   solver-name = "gps-cdcl"
   solver-version = 1

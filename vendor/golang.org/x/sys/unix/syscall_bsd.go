@@ -237,7 +237,11 @@ func anyToSockaddr(fd int, rsa *RawSockaddrAny) (Sockaddr, error) {
 				break
 			}
 		}
+<<<<<<< HEAD
+		bytes := (*[10000]byte)(unsafe.Pointer(&pp.Path[0]))[0:n]
+=======
 		bytes := (*[len(pp.Path)]byte)(unsafe.Pointer(&pp.Path[0]))[0:n]
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 		sa.Name = string(bytes)
 		return sa, nil
 

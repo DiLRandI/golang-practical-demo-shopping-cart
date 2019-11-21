@@ -410,11 +410,15 @@ func Open(path string, mode int, perm uint32) (fd Handle, err error) {
 	default:
 		createmode = OPEN_EXISTING
 	}
+<<<<<<< HEAD
+	h, e := CreateFile(pathp, access, sharemode, sa, createmode, FILE_ATTRIBUTE_NORMAL, 0)
+=======
 	var attrs uint32 = FILE_ATTRIBUTE_NORMAL
 	if perm&S_IWRITE == 0 {
 		attrs = FILE_ATTRIBUTE_READONLY
 	}
 	h, e := CreateFile(pathp, access, sharemode, sa, createmode, attrs, 0)
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 	return h, e
 }
 
@@ -861,7 +865,11 @@ func (rsa *RawSockaddrAny) Sockaddr() (Sockaddr, error) {
 		for n < len(pp.Path) && pp.Path[n] != 0 {
 			n++
 		}
+<<<<<<< HEAD
+		bytes := (*[10000]byte)(unsafe.Pointer(&pp.Path[0]))[0:n]
+=======
 		bytes := (*[len(pp.Path)]byte)(unsafe.Pointer(&pp.Path[0]))[0:n]
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 		sa.Name = string(bytes)
 		return sa, nil
 

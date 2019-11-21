@@ -339,8 +339,11 @@ func Kill(pid int, signum syscall.Signal) (err error) { return kill(pid, int(sig
 
 //sys	ioctl(fd int, req uint, arg uintptr) (err error)
 
+<<<<<<< HEAD
+=======
 //sys   sysctl(mib []_C_int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) (err error) = SYS_SYSCTL
 
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 func Uname(uname *Utsname) error {
 	mib := []_C_int{CTL_KERN, KERN_OSTYPE}
 	n := unsafe.Sizeof(uname.Sysname)
