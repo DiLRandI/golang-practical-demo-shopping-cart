@@ -10,10 +10,6 @@ import (
 	"syscall"
 )
 
-<<<<<<< HEAD
-//sys	sysctl(mib []_C_int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) (err error) = SYS___SYSCTL
-=======
->>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 //sys   ptrace(request int, pid int, addr uintptr, data uintptr) (err error)
 
 func setTimespec(sec, nsec int64) Timespec {

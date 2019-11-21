@@ -40,11 +40,6 @@ TEXT ·libc_sendmsg_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_sendmsg(SB)
 TEXT ·libc_kevent_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_kevent(SB)
-<<<<<<< HEAD
-=======
-TEXT ·libc___sysctl_trampoline(SB),NOSPLIT,$0-0
-	JMP	libc___sysctl(SB)
->>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 TEXT ·libc_utimes_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_utimes(SB)
 TEXT ·libc_futimes_trampoline(SB),NOSPLIT,$0-0
@@ -93,6 +88,8 @@ TEXT ·libc_kill_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_kill(SB)
 TEXT ·libc_ioctl_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_ioctl(SB)
+TEXT ·libc_sysctl_trampoline(SB),NOSPLIT,$0-0
+	JMP	libc_sysctl(SB)
 TEXT ·libc_sendfile_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_sendfile(SB)
 TEXT ·libc_access_trampoline(SB),NOSPLIT,$0-0
@@ -267,11 +264,6 @@ TEXT ·libc_mmap_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_mmap(SB)
 TEXT ·libc_munmap_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_munmap(SB)
-<<<<<<< HEAD
-TEXT ·libc___sysctl_trampoline(SB),NOSPLIT,$0-0
-	JMP	libc___sysctl(SB)
-=======
->>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 TEXT ·libc_ptrace_trampoline(SB),NOSPLIT,$0-0
 	JMP	libc_ptrace(SB)
 TEXT ·libc_gettimeofday_trampoline(SB),NOSPLIT,$0-0
