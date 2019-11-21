@@ -9,6 +9,7 @@
 package unix
 
 import (
+<<<<<<< HEAD
 	"runtime"
 	"unsafe"
 )
@@ -38,6 +39,11 @@ func cmsgAlignOf(salen int) int {
 	return (salen + salign - 1) & ^(salign - 1)
 }
 
+=======
+	"unsafe"
+)
+
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 // CmsgLen returns the value to store in the Len field of the Cmsghdr
 // structure, taking into account any necessary alignment.
 func CmsgLen(datalen int) int {
@@ -50,8 +56,13 @@ func CmsgSpace(datalen int) int {
 	return cmsgAlignOf(SizeofCmsghdr) + cmsgAlignOf(datalen)
 }
 
+<<<<<<< HEAD
 func cmsgData(h *Cmsghdr) unsafe.Pointer {
 	return unsafe.Pointer(uintptr(unsafe.Pointer(h)) + uintptr(cmsgAlignOf(SizeofCmsghdr)))
+=======
+func (h *Cmsghdr) data(offset uintptr) unsafe.Pointer {
+	return unsafe.Pointer(uintptr(unsafe.Pointer(h)) + uintptr(cmsgAlignOf(SizeofCmsghdr)) + offset)
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 }
 
 // SocketControlMessage represents a socket control message.
@@ -94,10 +105,15 @@ func UnixRights(fds ...int) []byte {
 	h.Level = SOL_SOCKET
 	h.Type = SCM_RIGHTS
 	h.SetLen(CmsgLen(datalen))
+<<<<<<< HEAD
 	data := cmsgData(h)
 	for _, fd := range fds {
 		*(*int32)(data) = int32(fd)
 		data = unsafe.Pointer(uintptr(data) + 4)
+=======
+	for i, fd := range fds {
+		*(*int32)(h.data(4 * uintptr(i))) = int32(fd)
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 	}
 	return b
 }

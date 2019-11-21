@@ -2,6 +2,7 @@
 
 
 [[projects]]
+<<<<<<< HEAD
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
   revision = "6c65a5562fc06764971b7c5d05c76c75e84bdbf7"
@@ -36,10 +37,38 @@
   packages = [".","balancer","balancer/base","balancer/roundrobin","binarylog/grpc_binarylog_v1","codes","connectivity","credentials","credentials/internal","encoding","encoding/proto","grpclog","internal","internal/backoff","internal/balancerload","internal/binarylog","internal/channelz","internal/envconfig","internal/grpcrand","internal/grpcsync","internal/syscall","internal/transport","keepalive","metadata","naming","peer","resolver","resolver/dns","resolver/passthrough","serviceconfig","stats","status","tap"]
   revision = "f6d0f9ee430895e87ef1ceb5ac8f39725bafceef"
   version = "v1.24.0"
+=======
+  name = "github.com/julienschmidt/httprouter"
+  packages = ["."]
+  revision = "4eec211fa4e8df74ed978dc5681612131854144f"
+  version = "v1.3.0"
+
+[[projects]]
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
+  version = "v1.0.2"
+
+[[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
+  version = "v1.4.2"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "f89234f9a2c237c4d4cf7b32e3d9fe2f7c4eacd7"
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
+<<<<<<< HEAD
   inputs-digest = "3ce8a91a099b451223bab1efb1bd9820ccfccb701cedc3dec9dc6c54b1609682"
+=======
+  inputs-digest = "6929ea31a360d17093b2e81f871912ffb3b26d08cb79d824e8de66ad1cce84e4"
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
   solver-name = "gps-cdcl"
   solver-version = 1

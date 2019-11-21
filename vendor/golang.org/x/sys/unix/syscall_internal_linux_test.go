@@ -30,7 +30,11 @@ func Test_anyToSockaddr(t *testing.T) {
 		},
 		{
 			name: "AF_TIPC NameSeq",
+<<<<<<< HEAD
 			rsa: (*RawSockaddrAny)(unsafe.Pointer(&RawSockaddrTIPC{
+=======
+			rsa: sockaddrTIPCToAny(RawSockaddrTIPC{
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 				Family:   AF_TIPC,
 				Addrtype: TIPC_SERVICE_RANGE,
 				Scope:    1,
@@ -39,7 +43,11 @@ func Test_anyToSockaddr(t *testing.T) {
 					Lower: 2,
 					Upper: 3,
 				}).tipcAddr(),
+<<<<<<< HEAD
 			})),
+=======
+			}),
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 			sa: &SockaddrTIPC{
 				Scope: 1,
 				Addr: &TIPCServiceRange{
@@ -51,7 +59,11 @@ func Test_anyToSockaddr(t *testing.T) {
 		},
 		{
 			name: "AF_TIPC Name",
+<<<<<<< HEAD
 			rsa: (*RawSockaddrAny)(unsafe.Pointer(&RawSockaddrTIPC{
+=======
+			rsa: sockaddrTIPCToAny(RawSockaddrTIPC{
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 				Family:   AF_TIPC,
 				Addrtype: TIPC_SERVICE_ADDR,
 				Scope:    2,
@@ -60,7 +72,11 @@ func Test_anyToSockaddr(t *testing.T) {
 					Instance: 2,
 					Domain:   3,
 				}).tipcAddr(),
+<<<<<<< HEAD
 			})),
+=======
+			}),
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 			sa: &SockaddrTIPC{
 				Scope: 2,
 				Addr: &TIPCServiceName{
@@ -72,7 +88,11 @@ func Test_anyToSockaddr(t *testing.T) {
 		},
 		{
 			name: "AF_TIPC ID",
+<<<<<<< HEAD
 			rsa: (*RawSockaddrAny)(unsafe.Pointer(&RawSockaddrTIPC{
+=======
+			rsa: sockaddrTIPCToAny(RawSockaddrTIPC{
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 				Family:   AF_TIPC,
 				Addrtype: TIPC_SOCKET_ADDR,
 				Scope:    3,
@@ -80,7 +100,11 @@ func Test_anyToSockaddr(t *testing.T) {
 					Ref:  1,
 					Node: 2,
 				}).tipcAddr(),
+<<<<<<< HEAD
 			})),
+=======
+			}),
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
 			sa: &SockaddrTIPC{
 				Scope: 3,
 				Addr: &TIPCSocketAddr{
@@ -214,3 +238,20 @@ func TestSockaddrTIPC_sockaddr(t *testing.T) {
 		})
 	}
 }
+<<<<<<< HEAD
+=======
+
+func sockaddrTIPCToAny(in RawSockaddrTIPC) *RawSockaddrAny {
+	var out RawSockaddrAny
+
+	// Explicitly copy the contents of in into out to produce the correct
+	// sockaddr structure, without relying on unsafe casting to a type of a
+	// larger size.
+	copy(
+		(*(*[SizeofSockaddrAny]byte)(unsafe.Pointer(&out)))[:],
+		(*(*[SizeofSockaddrTIPC]byte)(unsafe.Pointer(&in)))[:],
+	)
+
+	return &out
+}
+>>>>>>> 43664bc993332f7e6da9dd2b7bb44aa0eeb770d8
