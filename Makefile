@@ -24,5 +24,8 @@ docker-build:docker-build-cart docker-build-item docker-build-shipping
 proto-shipping:
 	protoc protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.
 
+proto-item:
+	protoc protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.
+
 clean: 
 	rm -rf cmd/item-service/bin cmd/cart-service/bin cmd/shipping-service/bin

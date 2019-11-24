@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
@@ -85,14 +88,6 @@ func init() {
 
 }
 
-func main() {
-	router := httprouter.New()
-	router.GET("/getitem", GetItems)
-	router.GET("/getitem/:ID", GetItemByID)
-
-	log.Fatal(http.ListenAndServe(":8080", router))
-}
-
 //GetItems endpoint
 func GetItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Info("GetAllItem Method Invoked")
@@ -134,4 +129,31 @@ func indexOf(element int) int {
 		}
 	}
 	return -1 //not found.
+}
+
+func main() {
+	log.Infoln("Starting the Item Service")
+	defer log.Warningln("Exiting item service")
+
+	sig := make(chan os.Signal)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
+	go httpRouting()
+	go grpcRouting()
+
+	<-sig
+}
+
+func httpRouting() {
+	log.Infoln("Starting the HTTP serving")
+
+	router := httprouter.New()
+	router.GET("/getitem", GetItems)
+	router.GET("/getitem/:ID", GetItemByID)
+
+	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func grpcRouting() {
+	log.Infoln("Starting the GRPC serving")
 }
