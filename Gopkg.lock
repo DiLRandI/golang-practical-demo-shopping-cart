@@ -32,6 +32,12 @@
   version = "v1.4.2"
 
 [[projects]]
+  name = "github.com/womblebob/uuid"
+  packages = ["."]
+  revision = "5790803c0cdbcc94db49ebd69fa0ab699b5c3f70"
+  version = "v1.1"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["http/httpguts","http2","http2/hpack","idna","internal/timeseries","trace"]
@@ -64,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2e9dca299c8260bc7bec1dbbaf2634f381551d0605cf1e5aab8bae3e578eaa18"
+  inputs-digest = "4cb6ac5a1d83c5e02ca89aaa0e07aa986bdc817c1b11e274d2ef5a0831161476"
   solver-name = "gps-cdcl"
   solver-version = 1
