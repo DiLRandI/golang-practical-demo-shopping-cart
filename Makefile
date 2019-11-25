@@ -14,7 +14,6 @@ GO_WD=-w $(PROJECT_FOLDER)
 GO_CMD=docker run --rm -i $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
 GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
 
-
 env-up:
 	cd ./compose && docker-compose up -d
 
@@ -33,7 +32,7 @@ docker-build-shipping:
 	$(GO_CMD) -o cmd/shipping-service/bin/shipping-service $(PROJECT_FOLDER)/cmd/shipping-service/main.go
 	docker build -f cmd/shipping-service/Dockerfile cmd/shipping-service/ -t shipping-service:demo
 
-docker-build:env-up docker-build-cart docker-build-item
+docker-build: docker-build-cart docker-build-item
 
 proto-shipping:
 	$(GRPC_CMD) protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.

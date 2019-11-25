@@ -1,23 +1,31 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
+
+	"google.golang.org/grpc"
 
 	"github.com/go-redis/redis"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 	"github.com/womblebob/uuid"
+
+	item_service_pb "github.com/dilrandi/golang-practical-demo-shopping-cart/protos/itempb"
 )
 
 var client *redis.Client
 var a uuid.UUID
+var itemGRPCEndpoint string
 
 func main() {
 	log.Infoln("Starting the Cart Service")
 	defer log.Warningln("Exiting Cart service")
-
+	itemGRPCEndpoint = os.Getenv("ITEM_GRPC_EP")
 	httpRouting()
 }
 
@@ -45,6 +53,17 @@ func ClearCart(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) 
 func AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
 	InitRedisConnection()
 	id := parm.ByName("ItemId")
+
+	exists, err := validateItemGRPC(10)
+
+	if err != nil {
+
+	}
+
+	if !exists {
+
+	}
+
 	cart, err := GetExistingCart()
 	if err != nil {
 		log.Errorln(err)
@@ -100,4 +119,24 @@ func InitRedisConnection() {
 	})
 
 	log.Infoln("Initializing a Redis Connection.")
+}
+
+func validateItemGRPC(itemID int) (bool, error) {
+	con, err := grpc.Dial(fmt.Sprintf("%s:50051", itemGRPCEndpoint), grpc.WithInsecure())
+
+	if err != nil {
+		return false, fmt.Errorf("Unable to connect to item service GRPC endpoint, error : %v", err)
+	}
+
+	c := item_service_pb.NewItemServiceClient(con)
+	req := &item_service_pb.IsItemExistsRequest{
+		ItemID: int32(itemID),
+	}
+	res, err := c.IsItemExists(context.Background(), req)
+
+	if err != nil {
+		return false, fmt.Errorf("Unable to retrive the item from item service grpc endpoint, error: %v", err)
+	}
+
+	return res.Exists, nil
 }

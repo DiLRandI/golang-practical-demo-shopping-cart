@@ -2,14 +2,14 @@ syntax = "proto3";
 package services.item;
 option go_package = "item-service.pb";
 
-message GetItemByIDRequest {
+message IsItemExistsRequest {
    int32 ItemID=1;
 }
 
-message ItemResponse {
-    float Cost = 1;
+message IsItemExistsResponse {
+    bool Exists=1;
 }
 
 service ItemService {
-    rpc GetItemByID (GetItemByIDRequest) returns (ItemResponse);
+    rpc IsItemExists (IsItemExistsRequest) returns (IsItemExistsResponse);
 }

@@ -33,6 +33,10 @@ type grpcShipping struct {
 
 func (*grpcShipping) CalculateShippingCost(ctx context.Context, req *shipping_service_pb.CalculateShippingCostRequest) (*shipping_service_pb.CalculateShippingCostResponse, error) {
 	log.Println("Calculating shipping cost for : ", req)
+	cost := 10 + (float32(req.Weight)*.5 + float32(req.Height*req.Width*req.Length)*0.05)
+	res := &shipping_service_pb.CalculateShippingCostResponse{
+		Cost: cost,
+	}
 	//Shipping calculate logic.
-	return nil, nil
+	return res, nil
 }
