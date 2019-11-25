@@ -7,48 +7,7 @@
 # required = ["github.com/user/thing/cmd/thing"]
 # ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
 #
-# [[constraint]]func ExampleNewClient() {
-// 	client := redis.NewClient(&redis.Options{
-// 		Addr:     "localhost:6379",
-// 		Password: "", // no password set
-// 		DB:       0,  // use default DB
-// 	})
-
-// 	pong, err := client.Ping().Result()
-// 	fmt.Println(pong, err)
-// 	// Output: PONG <nil>
-// }
-
-// func ExampleClient() {
-
-// 	client := redis.NewClient(&redis.Options{
-// 		Addr:     "localhost:6379",
-// 		Password: "", // no password set
-// 		DB:       0,  // use default DB
-// 	})
-
-// 	err := client.Set("key", "value", 0).Err()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	val, err := client.Get("key").Result()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	fmt.Println("key", val)
-
-// 	val2, err := client.Get("key2").Result()
-// 	if err == redis.Nil {
-// 		fmt.Println("key2 does not exist")
-// 	} else if err != nil {
-// 		panic(err)
-// 	} else {
-// 		fmt.Println("key2", val2)
-// 	}
-// 	// Output: key value
-// 	// key2 does not exist
-// }
+# [[constraint]]
 #   name = "github.com/user/project"
 #   version = "1.0.0"
 #
@@ -77,3 +36,7 @@
 [[constraint]]
   name = "google.golang.org/grpc"
   version = "1.25.1"
+
+[[constraint]]
+  name = "github.com/go-redis/redis"
+  version = "6.15.6"

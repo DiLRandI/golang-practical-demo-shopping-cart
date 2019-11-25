@@ -16,10 +16,10 @@ GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
 
 
 env-up:
-	cd ./cmd/compose && docker-compose up -d
+	cd ./compose && docker-compose up -d
 
 env-down:
-	cd ./cmd/compose && docker-compose down -v
+	cd ./compose && docker-compose down -v
 
 docker-build-cart:
 	$(GO_CMD) -o cmd/cart-service/bin/cart-service $(PROJECT_FOLDER)/cmd/cart-service/main.go
