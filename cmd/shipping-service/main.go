@@ -6,11 +6,11 @@ import (
 	"net"
 
 	shipping_service_pb "github.com/dilrandi/golang-practical-demo-shopping-cart/protos/shippingpb"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	log.SetFlags(log.Llongfile)
 	log.Println("Starting shipping service.")
 
 	lis, err := net.Listen("tcp", ":50051")
