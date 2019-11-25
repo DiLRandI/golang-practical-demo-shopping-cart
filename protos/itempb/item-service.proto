@@ -1,0 +1,15 @@
+syntax = "proto3";
+package services.item;
+option go_package = "item-service.pb";
+
+message GetItemByIDRequest {
+   int32 ItemID=1;
+}
+
+message ItemResponse {
+    float Cost = 1;
+}
+
+service ItemService {
+    rpc GetItemByID (GetItemByIDRequest) returns (ItemResponse);
+}
