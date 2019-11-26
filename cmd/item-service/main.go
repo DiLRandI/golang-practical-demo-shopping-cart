@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 
+	"google.golang.org/grpc"
+
+	item_service_pb "github.com/dilrandi/golang-practical-demo-shopping-cart/protos/itempb"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
@@ -156,4 +161,38 @@ func httpRouting() {
 
 func grpcRouting() {
 	log.Infoln("Starting the GRPC serving")
+
+	lis, err := net.Listen("tcp", ":50051")
+
+	if err != nil {
+		log.Fatalf("Unable to create listener, error : %v", err)
+	}
+
+	s := grpc.NewServer()
+
+	item_service_pb.RegisterItemServiceServer(s, &itemGrpc{})
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Unable to start GRPC server, error : %v", err)
+	}
+}
+
+type itemGrpc struct {
+}
+
+func (*itemGrpc) IsItemExists(ctx context.Context, req *item_service_pb.IsItemExistsRequest) (*item_service_pb.IsItemExistsResponse, error) {
+	log.Infof("Invoke GRPC endpoint : IsItemExists with ID : %v", req.ItemID)
+	defer log.Info("Exiting IsItemExists GRPC handler.")
+	index := indexOf(int(req.ItemID))
+	res := new(item_service_pb.IsItemExistsResponse)
+
+	if index != -1 {
+		log.Infof("Item with ID: %v, found", req.ItemID)
+		res.Exists = true
+		return res, nil
+	}
+
+	log.Warningf("Item with ID: %v, not exists", req.ItemID)
+	res.Exists = false
+	return res, nil
 }

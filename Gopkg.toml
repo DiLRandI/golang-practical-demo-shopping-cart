@@ -36,3 +36,15 @@
 [[constraint]]
   name = "google.golang.org/grpc"
   version = "1.25.1"
+
+[[constraint]]
+  name = "github.com/go-redis/redis"
+  version = "6.15.6"
+
+[[constraint]]
+  name = "github.com/google/uuid"
+  version = "1.1.1"
+
+[[constraint]]
+  name = "github.com/womblebob/uuid"
+  version = "1.1.0"

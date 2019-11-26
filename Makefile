@@ -1,4 +1,4 @@
-.PHONY: docker-build-cart docker-build-item docker-build-shipping
+.PHONY: docker-build-cart docker-build-item docker-build-shipping env-up
 
 PROJECT_FOLDER=/go/src/github.com/dilrandi/golang-practical-demo-shopping-cart
 GO_IMG=golang:alpine
@@ -26,13 +26,22 @@ docker-build-shipping:
 	$(GO_CMD) -o cmd/shipping-service/bin/shipping-service $(PROJECT_FOLDER)/cmd/shipping-service/main.go
 	docker build -f cmd/shipping-service/Dockerfile cmd/shipping-service/ -t shipping-service:demo
 
-docker-build:docker-build-cart docker-build-item docker-build-shipping
+docker-build: docker-build-cart docker-build-item
+
+proto-item:
+	$(GRPC_CMD) protos/itempb/item-service.proto --go_out=plugins=grpc:.
+
+env-up:
+	cd ./compose && docker-compose up -d
+
+env-down:
+	cd ./compose && docker-compose down -v
+
+full-cycle : docker-build env-up
 
 proto-shipping:
 	$(GRPC_CMD) protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.
 
-proto-item:
-	$(GRPC_CMD) protos/itempb/item-service.proto --go_out=plugins=grpc:.
 
 clean: 
 	rm -rf cmd/item-service/bin cmd/cart-service/bin cmd/shipping-service/bin

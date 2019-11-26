@@ -24,104 +24,104 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type GetItemByIDRequest struct {
+type IsItemExistsRequest struct {
 	ItemID               int32    `protobuf:"varint,1,opt,name=ItemID,proto3" json:"ItemID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetItemByIDRequest) Reset()         { *m = GetItemByIDRequest{} }
-func (m *GetItemByIDRequest) String() string { return proto.CompactTextString(m) }
-func (*GetItemByIDRequest) ProtoMessage()    {}
-func (*GetItemByIDRequest) Descriptor() ([]byte, []int) {
+func (m *IsItemExistsRequest) Reset()         { *m = IsItemExistsRequest{} }
+func (m *IsItemExistsRequest) String() string { return proto.CompactTextString(m) }
+func (*IsItemExistsRequest) ProtoMessage()    {}
+func (*IsItemExistsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_0738e7129d3319d0, []int{0}
 }
 
-func (m *GetItemByIDRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetItemByIDRequest.Unmarshal(m, b)
+func (m *IsItemExistsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_IsItemExistsRequest.Unmarshal(m, b)
 }
-func (m *GetItemByIDRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetItemByIDRequest.Marshal(b, m, deterministic)
+func (m *IsItemExistsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_IsItemExistsRequest.Marshal(b, m, deterministic)
 }
-func (m *GetItemByIDRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetItemByIDRequest.Merge(m, src)
+func (m *IsItemExistsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IsItemExistsRequest.Merge(m, src)
 }
-func (m *GetItemByIDRequest) XXX_Size() int {
-	return xxx_messageInfo_GetItemByIDRequest.Size(m)
+func (m *IsItemExistsRequest) XXX_Size() int {
+	return xxx_messageInfo_IsItemExistsRequest.Size(m)
 }
-func (m *GetItemByIDRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetItemByIDRequest.DiscardUnknown(m)
+func (m *IsItemExistsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_IsItemExistsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetItemByIDRequest proto.InternalMessageInfo
+var xxx_messageInfo_IsItemExistsRequest proto.InternalMessageInfo
 
-func (m *GetItemByIDRequest) GetItemID() int32 {
+func (m *IsItemExistsRequest) GetItemID() int32 {
 	if m != nil {
 		return m.ItemID
 	}
 	return 0
 }
 
-type ItemResponse struct {
-	Cost                 float32  `protobuf:"fixed32,1,opt,name=Cost,proto3" json:"Cost,omitempty"`
+type IsItemExistsResponse struct {
+	Exists               bool     `protobuf:"varint,1,opt,name=Exists,proto3" json:"Exists,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ItemResponse) Reset()         { *m = ItemResponse{} }
-func (m *ItemResponse) String() string { return proto.CompactTextString(m) }
-func (*ItemResponse) ProtoMessage()    {}
-func (*ItemResponse) Descriptor() ([]byte, []int) {
+func (m *IsItemExistsResponse) Reset()         { *m = IsItemExistsResponse{} }
+func (m *IsItemExistsResponse) String() string { return proto.CompactTextString(m) }
+func (*IsItemExistsResponse) ProtoMessage()    {}
+func (*IsItemExistsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_0738e7129d3319d0, []int{1}
 }
 
-func (m *ItemResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ItemResponse.Unmarshal(m, b)
+func (m *IsItemExistsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_IsItemExistsResponse.Unmarshal(m, b)
 }
-func (m *ItemResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ItemResponse.Marshal(b, m, deterministic)
+func (m *IsItemExistsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_IsItemExistsResponse.Marshal(b, m, deterministic)
 }
-func (m *ItemResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ItemResponse.Merge(m, src)
+func (m *IsItemExistsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IsItemExistsResponse.Merge(m, src)
 }
-func (m *ItemResponse) XXX_Size() int {
-	return xxx_messageInfo_ItemResponse.Size(m)
+func (m *IsItemExistsResponse) XXX_Size() int {
+	return xxx_messageInfo_IsItemExistsResponse.Size(m)
 }
-func (m *ItemResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ItemResponse.DiscardUnknown(m)
+func (m *IsItemExistsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_IsItemExistsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ItemResponse proto.InternalMessageInfo
+var xxx_messageInfo_IsItemExistsResponse proto.InternalMessageInfo
 
-func (m *ItemResponse) GetCost() float32 {
+func (m *IsItemExistsResponse) GetExists() bool {
 	if m != nil {
-		return m.Cost
+		return m.Exists
 	}
-	return 0
+	return false
 }
 
 func init() {
-	proto.RegisterType((*GetItemByIDRequest)(nil), "services.item.GetItemByIDRequest")
-	proto.RegisterType((*ItemResponse)(nil), "services.item.ItemResponse")
+	proto.RegisterType((*IsItemExistsRequest)(nil), "services.item.IsItemExistsRequest")
+	proto.RegisterType((*IsItemExistsResponse)(nil), "services.item.IsItemExistsResponse")
 }
 
 func init() { proto.RegisterFile("protos/itempb/item-service.proto", fileDescriptor_0738e7129d3319d0) }
 
 var fileDescriptor_0738e7129d3319d0 = []byte{
-	// 168 bytes of a gzipped FileDescriptorProto
+	// 164 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x28, 0x28, 0xca, 0x2f,
 	0xc9, 0x2f, 0xd6, 0xcf, 0x2c, 0x49, 0xcd, 0x2d, 0x48, 0x02, 0x53, 0xba, 0xc5, 0xa9, 0x45, 0x65,
-	0x99, 0xc9, 0xa9, 0x7a, 0x60, 0x29, 0x21, 0x5e, 0x28, 0xb7, 0x58, 0x0f, 0x24, 0xa9, 0xa4, 0xc3,
-	0x25, 0xe4, 0x9e, 0x5a, 0xe2, 0x59, 0x92, 0x9a, 0xeb, 0x54, 0xe9, 0xe9, 0x12, 0x94, 0x5a, 0x58,
-	0x9a, 0x5a, 0x5c, 0x22, 0x24, 0xc6, 0xc5, 0x06, 0x12, 0xf2, 0x74, 0x91, 0x60, 0x54, 0x60, 0xd4,
-	0x60, 0x0d, 0x82, 0xf2, 0x94, 0x94, 0xb8, 0x78, 0x40, 0xac, 0xa0, 0xd4, 0xe2, 0x82, 0xfc, 0xbc,
-	0xe2, 0x54, 0x21, 0x21, 0x2e, 0x16, 0xe7, 0xfc, 0xe2, 0x12, 0xb0, 0x2a, 0xa6, 0x20, 0x30, 0xdb,
-	0x28, 0x86, 0x8b, 0x1b, 0xa4, 0x26, 0x18, 0x62, 0x8d, 0x90, 0x2f, 0x17, 0x37, 0x92, 0x05, 0x42,
-	0x8a, 0x7a, 0x28, 0xf6, 0xeb, 0x61, 0x5a, 0x2e, 0x25, 0x8d, 0xa6, 0x04, 0xd9, 0x46, 0x27, 0xc1,
-	0x28, 0x7e, 0x54, 0x4f, 0x25, 0x25, 0xb1, 0x81, 0x3d, 0x66, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff,
-	0x71, 0x64, 0x5b, 0x98, 0xfc, 0x00, 0x00, 0x00,
+	0x99, 0xc9, 0xa9, 0x7a, 0x60, 0x29, 0x21, 0x5e, 0x28, 0xb7, 0x58, 0x0f, 0x24, 0xa9, 0xa4, 0xcb,
+	0x25, 0xec, 0x59, 0xec, 0x59, 0x92, 0x9a, 0xeb, 0x5a, 0x91, 0x59, 0x5c, 0x52, 0x1c, 0x94, 0x5a,
+	0x58, 0x9a, 0x5a, 0x5c, 0x22, 0x24, 0xc6, 0xc5, 0x06, 0x12, 0xf4, 0x74, 0x91, 0x60, 0x54, 0x60,
+	0xd4, 0x60, 0x0d, 0x82, 0xf2, 0x94, 0xf4, 0xb8, 0x44, 0x50, 0x95, 0x17, 0x17, 0xe4, 0xe7, 0x15,
+	0xa7, 0x82, 0xd4, 0x43, 0x44, 0xc0, 0xea, 0x39, 0x82, 0xa0, 0x3c, 0xa3, 0x34, 0x2e, 0x6e, 0x90,
+	0xea, 0x60, 0x88, 0x9d, 0x42, 0xe1, 0x5c, 0x3c, 0xc8, 0xda, 0x85, 0x94, 0xf4, 0x50, 0x5c, 0xa3,
+	0x87, 0xc5, 0x29, 0x52, 0xca, 0x78, 0xd5, 0x40, 0xec, 0x77, 0x12, 0x8c, 0xe2, 0x47, 0xf5, 0x6b,
+	0x52, 0x12, 0x1b, 0xd8, 0xbf, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x15, 0x76, 0xf4, 0x31,
+	0x13, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -136,7 +136,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ItemServiceClient interface {
-	GetItemByID(ctx context.Context, in *GetItemByIDRequest, opts ...grpc.CallOption) (*ItemResponse, error)
+	IsItemExists(ctx context.Context, in *IsItemExistsRequest, opts ...grpc.CallOption) (*IsItemExistsResponse, error)
 }
 
 type itemServiceClient struct {
@@ -147,9 +147,9 @@ func NewItemServiceClient(cc *grpc.ClientConn) ItemServiceClient {
 	return &itemServiceClient{cc}
 }
 
-func (c *itemServiceClient) GetItemByID(ctx context.Context, in *GetItemByIDRequest, opts ...grpc.CallOption) (*ItemResponse, error) {
-	out := new(ItemResponse)
-	err := c.cc.Invoke(ctx, "/services.item.ItemService/GetItemByID", in, out, opts...)
+func (c *itemServiceClient) IsItemExists(ctx context.Context, in *IsItemExistsRequest, opts ...grpc.CallOption) (*IsItemExistsResponse, error) {
+	out := new(IsItemExistsResponse)
+	err := c.cc.Invoke(ctx, "/services.item.ItemService/IsItemExists", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,35 +158,35 @@ func (c *itemServiceClient) GetItemByID(ctx context.Context, in *GetItemByIDRequ
 
 // ItemServiceServer is the server API for ItemService service.
 type ItemServiceServer interface {
-	GetItemByID(context.Context, *GetItemByIDRequest) (*ItemResponse, error)
+	IsItemExists(context.Context, *IsItemExistsRequest) (*IsItemExistsResponse, error)
 }
 
 // UnimplementedItemServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedItemServiceServer struct {
 }
 
-func (*UnimplementedItemServiceServer) GetItemByID(ctx context.Context, req *GetItemByIDRequest) (*ItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetItemByID not implemented")
+func (*UnimplementedItemServiceServer) IsItemExists(ctx context.Context, req *IsItemExistsRequest) (*IsItemExistsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsItemExists not implemented")
 }
 
 func RegisterItemServiceServer(s *grpc.Server, srv ItemServiceServer) {
 	s.RegisterService(&_ItemService_serviceDesc, srv)
 }
 
-func _ItemService_GetItemByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetItemByIDRequest)
+func _ItemService_IsItemExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsItemExistsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ItemServiceServer).GetItemByID(ctx, in)
+		return srv.(ItemServiceServer).IsItemExists(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/services.item.ItemService/GetItemByID",
+		FullMethod: "/services.item.ItemService/IsItemExists",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetItemByID(ctx, req.(*GetItemByIDRequest))
+		return srv.(ItemServiceServer).IsItemExists(ctx, req.(*IsItemExistsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -196,8 +196,8 @@ var _ItemService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ItemServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetItemByID",
-			Handler:    _ItemService_GetItemByID_Handler,
+			MethodName: "IsItemExists",
+			Handler:    _ItemService_IsItemExists_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
