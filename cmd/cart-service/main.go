@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -19,7 +20,6 @@ import (
 )
 
 var client *redis.Client
-var a uuid.UUID
 var itemGRPCEndpoint string
 
 func main() {
@@ -33,62 +33,86 @@ func httpRouting() {
 	log.Infoln("Starting the HTTP serving for Cart Servicing")
 
 	router := httprouter.New()
-	router.DELETE("/Clear", ClearCart)
-	router.POST("/AddItem/:ItemId", AddItem)
-	router.GET("/GetItems", GetCartItems)
+	router.DELETE("/clearcart", ClearCart)
+	router.POST("/addcartitem/:itemid", AddItem)
+	router.GET("/getcartitems", GetCartItems)
 
 	log.Fatal(http.ListenAndServe(":8090", router))
 }
 
 //ClearCart Clear Cart Items
 func ClearCart(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+	log.Infof("Invoke Clear Cart.")
+	defer log.Info("Exiting Clear Cart.")
+
 	InitRedisConnection()
+
 	flush := client.FlushAll()
 	if flush != nil {
-		log.Infoln(flush)
+		log.Infoln("Error Flushing Redis Data.", flush)
 	}
 }
 
 //AddItem Add Item to the Cart
 func AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
-	InitRedisConnection()
-	id := parm.ByName("ItemId")
+	log.Infof("Invoke Add Item to Cart.")
+	defer log.Info("Exiting Add Item to Cart.")
 
-	exists, err := validateItemGRPC(10)
+	InitRedisConnection()
+
+	stringid := parm.ByName("itemid")
+	id, err := strconv.Atoi(stringid)
+	if err != nil {
+		log.Errorln("Error Converting Id into Integer.", err)
+		http.Error(rw, "Error Converting Id.", http.StatusBadRequest)
+		return
+	}
+
+	exists, err := validateItemGRPC(id)
 
 	if err != nil {
-
+		log.Errorln("Error validating Item GPRC.", err)
+		http.Error(rw, "Error Vaidating Items.", http.StatusBadRequest)
+		return
 	}
 
 	if !exists {
-
+		log.Errorf("Item with a item Id %s does not esists in Item service.", stringid)
+		http.Error(rw, "Item does not exist.", http.StatusBadRequest)
+		return
 	}
 
 	cart, err := GetExistingCart()
 	if err != nil {
-		log.Errorln(err)
-		http.Error(rw, "Error when Checking for Existing Carts", http.StatusBadRequest)
+		log.Errorln("Error when retriving cart information :", err)
+		http.Error(rw, "Error when Checking for Existing Carts.", http.StatusBadRequest)
+		return
 	}
 	if cart == "" {
-		client.Set(string(uuid.NewRandom()), id, 0)
+		client.Set(string(uuid.NewRandom()), stringid, 0)
 	} else {
-		client.Append(cart, ","+id)
+		client.Append(cart, ","+stringid)
 	}
+
+	GetCartItems(rw, r, parm)
 
 }
 
 // GetCartItems Get Cart Items
 func GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	log.Infof("Invoke Get cart Items.")
+	defer log.Info("Exiting Get cart Items.")
+
 	InitRedisConnection()
 	cart, err := GetExistingCart()
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("Error when retriving cart information :", err)
 		http.Error(rw, "Error when Checking for Existing Carts", http.StatusBadRequest)
 	}
 	cartItems, err := client.Get(cart).Result()
+	log.Infoln(err)
 	if err != nil {
-		log.Errorln(err)
-		http.Error(rw, "Error when retriving Items", http.StatusBadRequest)
+		log.Errorln("No Items Found for the Cart.")
 	}
 	items := strings.Split(cartItems, ",")
 	log.Infoln(items)
@@ -113,7 +137,7 @@ func GetExistingCart() (string, error) {
 //InitRedisConnection Initializing a Redis Connection
 func InitRedisConnection() {
 	client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("Redis_Endpoint"),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

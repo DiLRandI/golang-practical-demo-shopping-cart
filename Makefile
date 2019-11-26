@@ -14,12 +14,6 @@ GO_WD=-w $(PROJECT_FOLDER)
 GO_CMD=docker run --rm -i $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
 GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
 
-env-up:
-	cd ./compose && docker-compose up -d
-
-env-down:
-	cd ./compose && docker-compose down -v
-
 docker-build-cart:
 	$(GO_CMD) -o cmd/cart-service/bin/cart-service $(PROJECT_FOLDER)/cmd/cart-service/main.go
 	docker build -f cmd/cart-service/Dockerfile cmd/cart-service/ -t cart-service:demo
@@ -34,11 +28,20 @@ docker-build-shipping:
 
 docker-build: docker-build-cart docker-build-item
 
+proto-item:
+	$(GRPC_CMD) protos/itempb/item-service.proto --go_out=plugins=grpc:.
+
+env-up:
+	cd ./compose && docker-compose up -d
+
+env-down:
+	cd ./compose && docker-compose down -v
+
+full-cycle : docker-build env-up
+
 proto-shipping:
 	$(GRPC_CMD) protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.
 
-proto-item:
-	$(GRPC_CMD) protos/itempb/item-service.proto --go_out=plugins=grpc:.
 
 clean: 
 	rm -rf cmd/item-service/bin cmd/cart-service/bin cmd/shipping-service/bin

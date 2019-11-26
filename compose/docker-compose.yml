@@ -6,5 +6,20 @@ services:
     ports: 
       - "6379:6379"
 
+  item_service:
+    image : "item-service:demo"
+    ports:
+      - "8080:8080"
+      
+  cart_service : 
+    image : "cart-service:demo"
+    environment :
+      ITEM_GRPC_EP : "item_service"
+      Redis_Endpoint : "redis:6379"
+    depends_on:
+      - redis
+      - item_service
+    ports:
+      - "8090:8090"
 volumes: 
   logs: 
