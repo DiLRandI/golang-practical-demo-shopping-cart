@@ -23,9 +23,7 @@ func main() {
 	s := grpc.NewServer()
 	shipping_service_pb.RegisterShippingServiceServer(s, &grpcShipping{})
 
-	if err := s.Serve(lis); err != nil {
-		panic(err)
-	}
+	log.Fatal(s.Serve(lis))
 }
 
 type grpcShipping struct {
