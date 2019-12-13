@@ -31,6 +31,9 @@ docker-build: docker-build-cart docker-build-item
 proto-item:
 	$(GRPC_CMD) protos/itempb/item-service.proto --go_out=plugins=grpc:.
 
+proto-shipping:
+	$(GRPC_CMD) protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.
+	
 env-up:
 	cd ./compose && docker-compose up -d
 
@@ -38,10 +41,6 @@ env-down:
 	cd ./compose && docker-compose down -v
 
 full-cycle : docker-build env-up
-
-proto-shipping:
-	$(GRPC_CMD) protos/shippingpb/shipping-service.proto --go_out=plugins=grpc:.
-
 
 clean: 
 	rm -rf cmd/item-service/bin cmd/cart-service/bin cmd/shipping-service/bin
