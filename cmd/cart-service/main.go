@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"google.golang.org/grpc"
-
 	"github.com/go-redis/redis"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
@@ -105,15 +104,19 @@ func GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 
 	InitRedisConnection()
 	cart, err := GetExistingCart()
+	
 	if err != nil {
 		log.Errorln("Error when retriving cart information :", err)
 		http.Error(rw, "Error when Checking for Existing Carts", http.StatusBadRequest)
 	}
+	
 	cartItems, err := client.Get(cart).Result()
 	log.Infoln(err)
+	
 	if err != nil {
 		log.Errorln("No Items Found for the Cart.")
 	}
+	
 	items := strings.Split(cartItems, ",")
 	log.Infoln(items)
 	json.NewEncoder(rw).Encode(items)
@@ -152,6 +155,7 @@ func validateItemGRPC(itemID int) (bool, error) {
 		return false, fmt.Errorf("Unable to connect to item service GRPC endpoint, error : %v", err)
 	}
 
+	defer con.Close()
 	c := item_service_pb.NewItemServiceClient(con)
 	req := &item_service_pb.IsItemExistsRequest{
 		ItemID: int32(itemID),
