@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"strings"
 
-	"google.golang.org/grpc"
 	"github.com/go-redis/redis"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 	"github.com/womblebob/uuid"
+	"google.golang.org/grpc"
 
 	item_service_pb "github.com/dilrandi/golang-practical-demo-shopping-cart/protos/itempb"
 )
@@ -32,24 +32,44 @@ func httpRouting() {
 	log.Infoln("Starting the HTTP serving for Cart Servicing")
 
 	router := httprouter.New()
-	router.DELETE("/clearcart", ClearCart)
+	router.DELETE("/clearcart", httpErrorHandler(clearCart))
 	router.POST("/addcartitem/:itemid", AddItem)
 	router.GET("/getcartitems", GetCartItems)
 
 	log.Fatal(http.ListenAndServe(":8090", router))
 }
 
-//ClearCart Clear Cart Items
-func ClearCart(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+// httpErrorHandler is a wrapper for http handler.
+// this will handle errors return from the handlers.
+func httpErrorHandler(hf func(http.ResponseWriter, *http.Request, httprouter.Params) (int, error)) func(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+	return func(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+		if s, err := hf(rw, r, parm); err != nil {
+			log.Errorf("Error return from the handler , error : %v ", err)
+			http.Error(rw, err.Error(), s)
+		}
+	}
+}
+
+//clearCart Clear Cart Items
+func clearCart(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) (int, error) {
 	log.Infof("Invoke Clear Cart.")
 	defer log.Info("Exiting Clear Cart.")
 
-	InitRedisConnection()
+	err := initRedisConnection()
+
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
 
 	flush := client.FlushAll()
-	if flush != nil {
-		log.Infoln("Error Flushing Redis Data.", flush)
+
+	_, err = flush.Result()
+
+	if err != nil {
+		log.Warnf("Error Flushing Redis Data. error : %v", err)
 	}
+
+	return http.StatusOK, nil
 }
 
 //AddItem Add Item to the Cart
@@ -57,7 +77,7 @@ func AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
 	log.Infof("Invoke Add Item to Cart.")
 	defer log.Info("Exiting Add Item to Cart.")
 
-	InitRedisConnection()
+	initRedisConnection()
 
 	stringid := parm.ByName("itemid")
 	id, err := strconv.Atoi(stringid)
@@ -102,21 +122,21 @@ func GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	log.Infof("Invoke Get cart Items.")
 	defer log.Info("Exiting Get cart Items.")
 
-	InitRedisConnection()
+	initRedisConnection()
 	cart, err := GetExistingCart()
-	
+
 	if err != nil {
 		log.Errorln("Error when retriving cart information :", err)
 		http.Error(rw, "Error when Checking for Existing Carts", http.StatusBadRequest)
 	}
-	
+
 	cartItems, err := client.Get(cart).Result()
 	log.Infoln(err)
-	
+
 	if err != nil {
 		log.Errorln("No Items Found for the Cart.")
 	}
-	
+
 	items := strings.Split(cartItems, ",")
 	log.Infoln(items)
 	json.NewEncoder(rw).Encode(items)
@@ -137,15 +157,24 @@ func GetExistingCart() (string, error) {
 	return val[0], nil
 }
 
-//InitRedisConnection Initializing a Redis Connection
-func InitRedisConnection() {
+// initRedisConnection Initializing a Redis Connection
+func initRedisConnection() error {
 	client = redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("Redis_Endpoint"),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
-	log.Infoln("Initializing a Redis Connection.")
+	s := client.Ping()
+	r, err := s.Result()
+
+	if err != nil {
+		return fmt.Errorf("Error while pinging the endpoint redis client, error : %v", err)
+
+	}
+
+	log.Info("Initializing a Redis Connection successful, with result : %s", r)
+	return nil
 }
 
 func validateItemGRPC(itemID int) (bool, error) {
