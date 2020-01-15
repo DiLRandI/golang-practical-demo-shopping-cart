@@ -9,124 +9,124 @@ import (
 	"strconv"
 	"strings"
 
-	"google.golang.org/grpc"
 	"github.com/go-redis/redis"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 	"github.com/womblebob/uuid"
+	"google.golang.org/grpc"
 
 	item_service_pb "github.com/dilrandi/golang-practical-demo-shopping-cart/protos/itempb"
 )
 
-var client *redis.Client
-var itemGRPCEndpoint string
-
 func main() {
 	log.Infoln("Starting the Cart Service")
 	defer log.Warningln("Exiting Cart service")
-	itemGRPCEndpoint = os.Getenv("ITEM_GRPC_EP")
-	httpRouting()
+	cs := newCartService()
+	cs.httpRouting()
 }
 
-func httpRouting() {
+func (cs *cartService) httpRouting() {
 	log.Infoln("Starting the HTTP serving for Cart Servicing")
 
 	router := httprouter.New()
-	router.DELETE("/clearcart", ClearCart)
-	router.POST("/addcartitem/:itemid", AddItem)
-	router.GET("/getcartitems", GetCartItems)
+	router.DELETE("/clearcart", httpErrorHandler(cs.clearCart))
+	router.POST("/addcartitem/:itemid", httpErrorHandler(cs.AddItem))
+	router.GET("/getcartitems", httpErrorHandler(cs.GetCartItems))
 
 	log.Fatal(http.ListenAndServe(":8090", router))
 }
 
-//ClearCart Clear Cart Items
-func ClearCart(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
-	log.Infof("Invoke Clear Cart.")
-	defer log.Info("Exiting Clear Cart.")
-
-	InitRedisConnection()
-
-	flush := client.FlushAll()
-	if flush != nil {
-		log.Infoln("Error Flushing Redis Data.", flush)
+// httpErrorHandler is a wrapper for http handler.
+// this will handle errors return from the handlers.
+func httpErrorHandler(hf func(http.ResponseWriter, *http.Request, httprouter.Params) (int, error)) func(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+	return func(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+		if s, err := hf(rw, r, parm); err != nil {
+			log.Errorf("Error return from the handler , error : %v ", err)
+			http.Error(rw, err.Error(), s)
+		}
 	}
 }
 
+//clearCart Clear Cart Items
+func (cs *cartService) clearCart(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) (int, error) {
+	log.Infof("Invoke Clear Cart.")
+	defer log.Info("Exiting Clear Cart.")
+
+	flush := cs.client.FlushAll()
+
+	_, err := flush.Result()
+
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("Error Flushing Redis Data. error : %v", err)
+	}
+
+	return http.StatusOK, nil
+}
+
 //AddItem Add Item to the Cart
-func AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+func (cs *cartService) AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) (int, error) {
 	log.Infof("Invoke Add Item to Cart.")
 	defer log.Info("Exiting Add Item to Cart.")
-
-	InitRedisConnection()
 
 	stringid := parm.ByName("itemid")
 	id, err := strconv.Atoi(stringid)
 	if err != nil {
-		log.Errorln("Error Converting Id into Integer.", err)
-		http.Error(rw, "Error Converting Id.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Error Converting Id into Integer:%v", err)
 	}
 
-	exists, err := validateItemGRPC(id)
+	exists, err := cs.validateItemGRPC(id)
 
 	if err != nil {
-		log.Errorln("Error validating Item GPRC.", err)
-		http.Error(rw, "Error Vaidating Items.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Error validating Item GPRC:%v", err)
 	}
 
 	if !exists {
-		log.Errorf("Item with a item Id %s does not esists in Item service.", stringid)
-		http.Error(rw, "Item does not exist.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Item with a item Id %s does not esists in Item service", stringid)
 	}
 
-	cart, err := GetExistingCart()
+	cart, err := cs.GetExistingCart()
 	if err != nil {
-		log.Errorln("Error when retriving cart information :", err)
-		http.Error(rw, "Error when Checking for Existing Carts.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Error when retriving cart information: %v", stringid)
 	}
 	if cart == "" {
-		client.Set(string(uuid.NewRandom()), stringid, 0)
+		cs.client.Set(string(uuid.NewRandom()), stringid, 0)
 	} else {
-		client.Append(cart, ","+stringid)
+		cs.client.Append(cart, ","+stringid)
 	}
 
-	GetCartItems(rw, r, parm)
+	return cs.GetCartItems(rw, r, parm)
 
 }
 
 // GetCartItems Get Cart Items
-func GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (cs *cartService) GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) (int, error) {
 	log.Infof("Invoke Get cart Items.")
 	defer log.Info("Exiting Get cart Items.")
 
-	InitRedisConnection()
-	cart, err := GetExistingCart()
-	
+	cart, err := cs.GetExistingCart()
+
 	if err != nil {
-		log.Errorln("Error when retriving cart information :", err)
-		http.Error(rw, "Error when Checking for Existing Carts", http.StatusBadRequest)
+		return http.StatusInternalServerError, fmt.Errorf("Error when retriving cart information : %v", err)
 	}
-	
-	cartItems, err := client.Get(cart).Result()
+
+	cartItems, err := cs.client.Get(cart).Result()
 	log.Infoln(err)
-	
+
 	if err != nil {
 		log.Errorln("No Items Found for the Cart.")
 	}
-	
+
 	items := strings.Split(cartItems, ",")
 	log.Infoln(items)
 	json.NewEncoder(rw).Encode(items)
+
+	return http.StatusOK, nil
 }
 
 //GetExistingCart get Existing Cart
-func GetExistingCart() (string, error) {
-	val, err := client.Keys("*").Result()
+func (cs *cartService) GetExistingCart() (string, error) {
+	val, err := cs.client.Keys("*").Result()
 	if err != nil {
-		log.Error(err)
 		return "", err
 	}
 
@@ -137,19 +137,28 @@ func GetExistingCart() (string, error) {
 	return val[0], nil
 }
 
-//InitRedisConnection Initializing a Redis Connection
-func InitRedisConnection() {
-	client = redis.NewClient(&redis.Options{
+// initRedisConnection Initializing a Redis Connection
+func newStorage() (*redis.Client, error) {
+	client := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("Redis_Endpoint"),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
-	log.Infoln("Initializing a Redis Connection.")
+	s := client.Ping()
+	r, err := s.Result()
+
+	if err != nil {
+		return nil, fmt.Errorf("Error while pinging the endpoint redis client, error : %v", err)
+
+	}
+
+	log.Info("Initializing a Redis Connection successful, with result : %s", r)
+	return client, nil
 }
 
-func validateItemGRPC(itemID int) (bool, error) {
-	con, err := grpc.Dial(fmt.Sprintf("%s:50051", itemGRPCEndpoint), grpc.WithInsecure())
+func (cs *cartService) validateItemGRPC(itemID int) (bool, error) {
+	con, err := grpc.Dial(fmt.Sprintf("%s:50051", cs.itemGRPCEndpoint), grpc.WithInsecure())
 
 	if err != nil {
 		return false, fmt.Errorf("Unable to connect to item service GRPC endpoint, error : %v", err)
@@ -167,4 +176,25 @@ func validateItemGRPC(itemID int) (bool, error) {
 	}
 
 	return res.Exists, nil
+}
+
+type cartService struct {
+	client           *redis.Client
+	itemGRPCEndpoint string
+}
+
+func newCartService() *cartService {
+	client, err := newStorage()
+
+	if err != nil {
+		log.Fatalf("Unable to create redis client : %v", err)
+	}
+
+	itemGRPCEndpoint := os.Getenv("ITEM_GRPC_EP")
+
+	return &cartService{
+		client:           client,
+		itemGRPCEndpoint: itemGRPCEndpoint,
+	}
+
 }

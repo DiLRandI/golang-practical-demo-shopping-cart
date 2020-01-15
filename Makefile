@@ -26,7 +26,7 @@ docker-build-shipping:
 	$(GO_CMD) -o cmd/shipping-service/bin/shipping-service $(PROJECT_FOLDER)/cmd/shipping-service/main.go
 	docker build -f cmd/shipping-service/Dockerfile cmd/shipping-service/ -t shipping-service:demo
 
-docker-build: docker-build-cart docker-build-item
+docker-build: docker-build-cart docker-build-item #docker-build-shipping
 
 proto-item:
 	$(GRPC_CMD) protos/itempb/item-service.proto --go_out=plugins=grpc:.
