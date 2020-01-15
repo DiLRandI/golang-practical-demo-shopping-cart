@@ -30,8 +30,8 @@ func (cs *cartService) httpRouting() {
 
 	router := httprouter.New()
 	router.DELETE("/clearcart", httpErrorHandler(cs.clearCart))
-	router.POST("/addcartitem/:itemid", cs.AddItem)
-	router.GET("/getcartitems", cs.GetCartItems)
+	router.POST("/addcartitem/:itemid", httpErrorHandler(cs.AddItem))
+	router.GET("/getcartitems", httpErrorHandler(cs.GetCartItems))
 
 	log.Fatal(http.ListenAndServe(":8090", router))
 }
@@ -64,37 +64,29 @@ func (cs *cartService) clearCart(rw http.ResponseWriter, r *http.Request, parm h
 }
 
 //AddItem Add Item to the Cart
-func (cs *cartService) AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+func (cs *cartService) AddItem(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) (int, error) {
 	log.Infof("Invoke Add Item to Cart.")
 	defer log.Info("Exiting Add Item to Cart.")
 
 	stringid := parm.ByName("itemid")
 	id, err := strconv.Atoi(stringid)
 	if err != nil {
-		log.Errorln("Error Converting Id into Integer.", err)
-		http.Error(rw, "Error Converting Id.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Error Converting Id into Integer:%v", err)
 	}
 
 	exists, err := cs.validateItemGRPC(id)
 
 	if err != nil {
-		log.Errorln("Error validating Item GPRC.", err)
-		http.Error(rw, "Error Vaidating Items.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Error validating Item GPRC:%v", err)
 	}
 
 	if !exists {
-		log.Errorf("Item with a item Id %s does not esists in Item service.", stringid)
-		http.Error(rw, "Item does not exist.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Item with a item Id %s does not esists in Item service", stringid)
 	}
 
 	cart, err := cs.GetExistingCart()
 	if err != nil {
-		log.Errorln("Error when retriving cart information :", err)
-		http.Error(rw, "Error when Checking for Existing Carts.", http.StatusBadRequest)
-		return
+		return http.StatusInternalServerError, fmt.Errorf("Error when retriving cart information: %v", stringid)
 	}
 	if cart == "" {
 		cs.client.Set(string(uuid.NewRandom()), stringid, 0)
@@ -102,20 +94,19 @@ func (cs *cartService) AddItem(rw http.ResponseWriter, r *http.Request, parm htt
 		cs.client.Append(cart, ","+stringid)
 	}
 
-	cs.GetCartItems(rw, r, parm)
+	return cs.GetCartItems(rw, r, parm)
 
 }
 
 // GetCartItems Get Cart Items
-func (cs *cartService) GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (cs *cartService) GetCartItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) (int, error) {
 	log.Infof("Invoke Get cart Items.")
 	defer log.Info("Exiting Get cart Items.")
 
 	cart, err := cs.GetExistingCart()
 
 	if err != nil {
-		log.Errorln("Error when retriving cart information :", err)
-		http.Error(rw, "Error when Checking for Existing Carts", http.StatusBadRequest)
+		return http.StatusInternalServerError, fmt.Errorf("Error when retriving cart information : %v", err)
 	}
 
 	cartItems, err := cs.client.Get(cart).Result()
@@ -128,6 +119,8 @@ func (cs *cartService) GetCartItems(rw http.ResponseWriter, r *http.Request, _ h
 	items := strings.Split(cartItems, ",")
 	log.Infoln(items)
 	json.NewEncoder(rw).Encode(items)
+
+	return http.StatusOK, nil
 }
 
 //GetExistingCart get Existing Cart

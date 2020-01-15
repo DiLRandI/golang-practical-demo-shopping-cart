@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -93,49 +94,6 @@ func init() {
 
 }
 
-//GetItems endpoint
-func GetItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	log.Info("GetAllItem Method Invoked")
-	defer log.Info("GetAllItem  Exiting")
-
-	json.NewEncoder(rw).Encode(items)
-}
-
-//GetItemByID Id endpoint
-func GetItemByID(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
-	log.Info("GetItemByID  Method Invoked")
-	defer log.Info("GetItemByID Exiting")
-
-	stringID := parm.ByName("ID")
-	id, err := strconv.Atoi(stringID)
-
-	if err != nil {
-		log.Errorf("error while reading ID param, %v", err)
-		http.Error(rw, "Invalid Type of ItemId", http.StatusBadRequest)
-		return
-	}
-
-	index := indexOf(id)
-
-	if index == -1 {
-		log.Warningf("No data found to given ID : %v", id)
-		http.Error(rw, "", http.StatusNotFound)
-		return
-	}
-
-	log.Printf("Response value, %+v", items[index])
-	json.NewEncoder(rw).Encode(items[index])
-}
-
-func indexOf(element int) int {
-	for k, v := range items {
-		if element == v.ID {
-			return k
-		}
-	}
-	return -1 //not found.
-}
-
 func main() {
 	log.Infoln("Starting the Item Service")
 	defer log.Warningln("Exiting item service")
@@ -153,10 +111,62 @@ func httpRouting() {
 	log.Infoln("Starting the HTTP serving")
 
 	router := httprouter.New()
-	router.GET("/getitem", GetItems)
-	router.GET("/getitem/:ID", GetItemByID)
+	router.GET("/getitem", httpErrorHandler(GetItems))
+	router.GET("/getitem/:ID", httpErrorHandler(GetItemByID))
 
 	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+// httpErrorHandler is a wrapper for http handler.
+// this will handle errors return from the handlers.
+func httpErrorHandler(hf func(http.ResponseWriter, *http.Request, httprouter.Params) (int, error)) func(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+	return func(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) {
+		if s, err := hf(rw, r, parm); err != nil {
+			log.Errorf("Error return from the handler , error : %v ", err)
+			http.Error(rw, err.Error(), s)
+		}
+	}
+}
+
+//GetItems endpoint
+func GetItems(rw http.ResponseWriter, r *http.Request, _ httprouter.Params) (int, error) {
+	log.Info("GetAllItem Method Invoked")
+	defer log.Info("GetAllItem  Exiting")
+
+	json.NewEncoder(rw).Encode(items)
+	return http.StatusOK, nil
+}
+
+//GetItemByID Id endpoint
+func GetItemByID(rw http.ResponseWriter, r *http.Request, parm httprouter.Params) (int, error) {
+	log.Info("GetItemByID  Method Invoked")
+	defer log.Info("GetItemByID Exiting")
+
+	stringID := parm.ByName("ID")
+	id, err := strconv.Atoi(stringID)
+
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("error while reading ID param, %v", err)
+	}
+
+	index := indexOf(id)
+
+	if index == -1 {
+		return http.StatusInternalServerError, fmt.Errorf("No data found to given ID : %v", id)
+	}
+
+	log.Printf("Response value, %+v", items[index])
+	json.NewEncoder(rw).Encode(items[index])
+	return http.StatusOK, nil
+}
+
+func indexOf(element int) int {
+	for k, v := range items {
+		if element == v.ID {
+			return k
+		}
+	}
+	return -1 //not found.
 }
 
 func grpcRouting() {
