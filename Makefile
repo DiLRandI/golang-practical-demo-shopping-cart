@@ -3,6 +3,7 @@
 PROJECT_FOLDER=/go/src/github.com/dilrandi/golang-practical-demo-shopping-cart
 GO_IMG=golang:alpine
 GRPC_IMG=deleema1/grpc-tool-golang
+GODOG_IMG=deleema1/godog
 PWD=$(shell pwd)
 
 GO_VOL=-v $(GOPATH)/src:/go/src
