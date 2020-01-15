@@ -1,19 +1,22 @@
 .PHONY: docker-build-cart docker-build-item docker-build-shipping env-up
 
 PROJECT_FOLDER=/go/src/github.com/dilrandi/golang-practical-demo-shopping-cart
+
 GO_IMG=golang:alpine
 GRPC_IMG=deleema1/grpc-tool-golang
 GODOG_IMG=deleema1/godog
-PWD=$(shell pwd)
 
+PWD=$(shell pwd)
 GO_VOL=-v $(GOPATH)/src:/go/src
 GRPC_VOL=-v $(PWD):/opt/mnt
 
 GO_ENV=-e CGO_ENABLED=0 -e GOOS=linux
 GO_WD=-w $(PROJECT_FOLDER)
+GODOG_WD=-w $(PROJECT_FOLDER)/integration_tests
 
 GO_CMD=docker run --rm -i $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
 GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
+GODOG_CMD=docker run --rm -i $(GO_VOL) $(GODOG_WD) $(GODOG_IMG) godog
 
 docker-build-cart:
 	$(GO_CMD) -o cmd/cart-service/bin/cart-service $(PROJECT_FOLDER)/cmd/cart-service/main.go
