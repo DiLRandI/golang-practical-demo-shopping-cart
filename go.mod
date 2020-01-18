@@ -3,6 +3,7 @@ module github.com/dilrandi/golang-practical-demo-shopping-cart
 go 1.13
 
 require (
+	github.com/DATA-DOG/godog v0.7.13
 	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/golang/protobuf v1.3.2
 	github.com/julienschmidt/httprouter v1.3.0

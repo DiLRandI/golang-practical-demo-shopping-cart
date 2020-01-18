@@ -18,6 +18,25 @@ GO_CMD=docker run --rm -i $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
 GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
 GODOG_CMD=docker run --rm -i $(GO_VOL) $(GODOG_WD) $(GODOG_IMG) godog
 
+
+# go-related paths, using simple ":=" assignment to avoid the shell call being re-executed on every usage 
+goPath := $(shell expr "$$PWD" : '\(.*/go/\)src')
+goSrc  := $(shell expr "$$PWD" : '\(.*/go/src/\)')
+goPrj  := $(shell expr "$$PWD" : '.*/go/src/\(.*\)')
+
+godogWalkerContainer = CGO_ENABLED=1 docker run -i --rm \
+ --network compose_default \
+ -v $(goSrc):/go/src/ \
+ -e GO111MODULE=on \
+ -w /go/src/$(goPrj)/integration_tests \
+ $(GODOG_IMG)
+
+fullTest = $(godogWalkerContainer) godog
+
+
+full-test:
+	$(fullTest)
+
 docker-build-cart:
 	$(GO_CMD) -o cmd/cart-service/bin/cart-service $(PROJECT_FOLDER)/cmd/cart-service/main.go
 	docker build -f cmd/cart-service/Dockerfile cmd/cart-service/ -t cart-service:demo
