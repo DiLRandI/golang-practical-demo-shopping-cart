@@ -11,15 +11,34 @@ import (
 	"github.com/DATA-DOG/godog/colors"
 )
 
+//PackingDetail ..
+type PackingDetailResponse struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+	Weight int `json:"weight"`
+}
+
+type ItemResponse struct {
+	ID             int           `json:"id"`
+	ItemCode       string        `json:"item_code"`
+	Description    string        `json:"description"`
+	UnitPrice      float32       `json:"unit_price"`
+	PackingDetails PackingDetailResponse `json:"packing_details"`
+}
 
 type apiFeature struct {
-	itemServerUri string
+	serverURI string
+	
 	respCode int
 	err string
+
+	itemResponse ItemResponse 
+	cartResponse []int
+
 }
 
 func (a *apiFeature) clear(interface{}) {
-	a.itemServerUri = ""
+	a.serverURI = ""
 	}
 
 	func init() {
@@ -34,6 +53,7 @@ func (a *apiFeature) clear(interface{}) {
 	func FeatureContext(s *godog.Suite) {
 		a := &apiFeature{}
 		s.BeforeScenario(a.clear)
+		itemFeatureContext(s,a)
 	
 	}
 	
