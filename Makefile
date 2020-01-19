@@ -12,30 +12,18 @@ GRPC_VOL=-v $(PWD):/opt/mnt
 
 GO_ENV=-e CGO_ENABLED=0 -e GOOS=linux
 GO_WD=-w $(PROJECT_FOLDER)
-GODOG_WD=-w $(PROJECT_FOLDER)/integration_tests
 
-GO_CMD=docker run --rm -i $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
-GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
-GODOG_CMD=docker run --rm -i $(GO_VOL) $(GODOG_WD) $(GODOG_IMG) godog
+GODOG_ENV=-e CGO_ENABLED=1 -e GO111MODULE="on"
+GODOG_NETWORK=--network compose_default
+GODOG_WD=-w $(PROJECT_FOLDER)
+GODOG_PATCH_CMD=/bin/bash -c "godog integration_tests/"
 
-
-# go-related paths, using simple ":=" assignment to avoid the shell call being re-executed on every usage 
-goPath := $(shell expr "$$PWD" : '\(.*/go/\)src')
-goSrc  := $(shell expr "$$PWD" : '\(.*/go/src/\)')
-goPrj  := $(shell expr "$$PWD" : '.*/go/src/\(.*\)')
-
-godogWalkerContainer = CGO_ENABLED=1 docker run -i --rm \
- --network compose_default \
- -v $(goSrc):/go/src/ \
- -e GO111MODULE=on \
- -w /go/src/$(goPrj)/integration_tests \
- $(GODOG_IMG)
-
-fullTest = $(godogWalkerContainer) godog
-
+GO_CMD=docker run -i --rm $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
+GRPC_CMD=docker run -i --rm $(GRPC_VOL) $(GRPC_IMG)
+GODOG_CMD=docker run -i --rm $(GO_VOL) $(GODOG_ENV) $(GODOG_NETWORK) $(GODOG_WD) $(GODOG_IMG) godog integration_tests
 
 full-test:
-	$(fullTest)
+	$(GODOG_CMD)
 
 docker-build-cart:
 	$(GO_CMD) -o cmd/cart-service/bin/cart-service $(PROJECT_FOLDER)/cmd/cart-service/main.go

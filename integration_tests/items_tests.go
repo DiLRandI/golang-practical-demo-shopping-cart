@@ -3,18 +3,19 @@ package integration_tests
 import (
 	"fmt"
 	"net/http"
+
 	"github.com/DATA-DOG/godog"
 )
 
 func (a *apiFeature) iAmUsingItemService() error {
-	a.itemServerUri="http://localhost:8080"
+	a.itemServerUri = "http://localhost:8080"
 	return nil
 }
 
 func (a *apiFeature) iCallGetEndpointInItems() error {
 	endpoint := "/getitem"
 	var response interface{}
-	rc,err := SendHttp(http.MethodGet,endpoint,a.itemServerUri,nil,&response,getServiceHeaders())
+	rc, err := SendHttp(http.MethodGet, endpoint, a.itemServerUri, nil, &response, getServiceHeaders())
 	a.err = err.Error()
 	a.respCode = rc
 	return nil
