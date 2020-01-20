@@ -15,12 +15,11 @@ GO_WD=-w $(PROJECT_FOLDER)
 
 GODOG_ENV=-e CGO_ENABLED=1 -e GO111MODULE="on"
 GODOG_NETWORK=--network compose_default
-GODOG_WD=-w $(PROJECT_FOLDER)
-GODOG_PATCH_CMD=/bin/bash -c "godog integration_tests/"
+GODOG_WD=-w $(PROJECT_FOLDER)/integration_tests/
 
 GO_CMD=docker run -i --rm $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
 GRPC_CMD=docker run -i --rm $(GRPC_VOL) $(GRPC_IMG)
-GODOG_CMD=docker run -i --rm $(GO_VOL) $(GODOG_ENV) $(GODOG_NETWORK) $(GODOG_WD) $(GODOG_IMG) godog integration_tests
+GODOG_CMD=docker run -i --rm $(GO_VOL) $(GODOG_ENV) $(GODOG_NETWORK) $(GODOG_WD) $(GODOG_IMG) godog
 
 full-test:
 	$(GODOG_CMD)
