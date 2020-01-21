@@ -1,18 +1,28 @@
 .PHONY: docker-build-cart docker-build-item docker-build-shipping env-up
 
 PROJECT_FOLDER=/go/src/github.com/dilrandi/golang-practical-demo-shopping-cart
+
 GO_IMG=golang:alpine
 GRPC_IMG=deleema1/grpc-tool-golang
-PWD=$(shell pwd)
+GODOG_IMG=deleema1/godog
 
+PWD=$(shell pwd)
 GO_VOL=-v $(GOPATH)/src:/go/src
 GRPC_VOL=-v $(PWD):/opt/mnt
 
 GO_ENV=-e CGO_ENABLED=0 -e GOOS=linux
 GO_WD=-w $(PROJECT_FOLDER)
 
-GO_CMD=docker run --rm -i $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
-GRPC_CMD=docker run --rm -i $(GRPC_VOL) $(GRPC_IMG)
+GODOG_ENV=-e CGO_ENABLED=1 -e GO111MODULE="on"
+GODOG_NETWORK=--network compose_default
+GODOG_WD=-w $(PROJECT_FOLDER)/integration_tests/
+
+GO_CMD=docker run -i --rm $(GO_VOL) $(GO_ENV) $(GO_WD) $(GO_IMG) go build -a
+GRPC_CMD=docker run -i --rm $(GRPC_VOL) $(GRPC_IMG)
+GODOG_CMD=docker run -i --rm $(GO_VOL) $(GODOG_ENV) $(GODOG_NETWORK) $(GODOG_WD) $(GODOG_IMG) godog
+
+full-test:
+	$(GODOG_CMD)
 
 docker-build-cart:
 	$(GO_CMD) -o cmd/cart-service/bin/cart-service $(PROJECT_FOLDER)/cmd/cart-service/main.go
@@ -40,7 +50,7 @@ env-up:
 env-down:
 	cd ./compose && docker-compose down -v
 
-full-cycle : docker-build env-up
+full-cycle : docker-build env-up full-test 
 
 clean: 
 	rm -rf cmd/item-service/bin cmd/cart-service/bin cmd/shipping-service/bin
