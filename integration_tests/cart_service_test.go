@@ -1,36 +1,93 @@
 package integration_tests
 
-import "github.com/DATA-DOG/godog"
+import ("github.com/DATA-DOG/godog"
+"fmt"
+"net/http"
+)
+
+//PackingDetail ..
+type PackingDetailResponse struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+	Weight int `json:"weight"`
+}
+
+type ItemResponse struct {
+	ID             int           `json:"id"`
+	ItemCode       string        `json:"item_code"`
+	Description    string        `json:"description"`
+	UnitPrice      float32       `json:"unit_price"`
+	PackingDetails PackingDetailResponse `json:"packing_details"`
+}
 
 type cartFeature struct {
+	serverURI string
+	
+	respCode int
+	err string
+
+	itemResponse ItemResponse 
+	cartResponse []string
 }
 
 func (c *cartFeature) iAmUsingCartService() error {
-	return godog.ErrPending
+	c.serverURI = "http://cart_service:8090"
+	return nil
 }
 
 func (c *cartFeature) iCallAddCartItem() error {
-	return godog.ErrPending
+	endpoint := "/addcartitem/1"
+	var response interface{}
+	rc, err := SendHttp(http.MethodPost, endpoint, c.serverURI, nil, &response, getServiceHeaders())
+	if err!= nil{
+		return fmt.Errorf("Item Not Added to Cart :%v",err)
+	}
+	c.respCode = rc
+	return nil
 }
 
 func (c *cartFeature) iCallGetCartItems() error {
-	return godog.ErrPending
+	endpoint := "/getcartitems"
+	rc, err := SendHttp(http.MethodGet, endpoint, c.serverURI, nil, &c.cartResponse, getServiceHeaders())
+	if err!= nil{
+		return fmt.Errorf("Item Not Added to Cart :%v",err)
+	}
+	
+	c.respCode = rc
+	return nil
 }
 
 func (c *cartFeature) iShouldReceiveResponseOfSuccess() error {
-	return godog.ErrPending
+	if c.respCode != 200 {
+		return fmt.Errorf("Invalid Response, Items Not Added to Cart:%d",c.respCode)
+	}
+	return nil
 }
 
 func (c *cartFeature) iShouldReceivedTheAddedItemFromCart() error {
-	return godog.ErrPending
+	
+	if c.cartResponse[0] != "1" {
+		return fmt.Errorf("Added Item Cannot be found in the Cart")
+	}
+	return nil
 }
 
 func (c *cartFeature) iShouldReceiveEmptyCart() error {
-	return godog.ErrPending
+	if c.cartResponse[0] == "1" {
+		return fmt.Errorf("Cart Is Not Empty")
+	}
+	return nil
 }
 
 func (c *cartFeature) iCallClearCart() error {
-	return godog.ErrPending
+	endpoint := "/clearcart"
+	var response interface{}
+	rc, err := SendHttp(http.MethodDelete, endpoint, c.serverURI, nil, &response, getServiceHeaders())
+	if err !=nil{
+		return fmt.Errorf("Method Delete Error :%v",err)
+	}
+	c.respCode = rc
+	return nil
 }
 
 func CartFeatureContext(s *godog.Suite) {

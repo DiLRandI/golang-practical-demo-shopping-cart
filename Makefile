@@ -50,7 +50,7 @@ env-up:
 env-down:
 	cd ./compose && docker-compose down -v
 
-full-cycle : docker-build env-up
+full-cycle : docker-build env-up full-test 
 
 clean: 
 	rm -rf cmd/item-service/bin cmd/cart-service/bin cmd/shipping-service/bin
